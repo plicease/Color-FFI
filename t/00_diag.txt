@@ -1,3 +1,3 @@
-FFI::Sweet
+FFI::Platypus
 Module::Build
 Test::More
