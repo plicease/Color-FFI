@@ -3,6 +3,7 @@ package Color::FFI;
 use strict;
 use warnings;
 use FFI::Platypus;
+use FFI::Platypus::Memory;
 
 # ABSTRACT: example color class written using Module::Build::FFI
 # VERSION
@@ -27,6 +28,8 @@ channel values, red, green and blue.
 
 =head1 CONSTRUCTOR
 
+=head2 new
+
 To create an instance of this class, you can use new, or one of the 
 convenience methods.  If you use new you must provide an integer triplet 
 of the red, green and blue values.
@@ -38,17 +41,76 @@ of the red, green and blue values.
 
 =head1 METHODS
 
-=head2 $color-E<gt>get_red
+=head2 white
+
+ my $color = Color::FFI->white;
+
+Class method that returns an instance of L<Color::FFI> that is pure
+white.
+
+=head2 black
+
+ my $color = Color::FFI->black;
+
+Class method that returns an instance of L<Color::FFI> that is pure
+black.
+
+=head2 red
+
+ my $color = Color::FFI->red;
+
+Class method that returns an instance of L<Color::FFI> that is pure
+red.
+
+=head2 get_red
+
+ my $red = $color->get_red;
 
 Return the red color channel as an 8-bit value.
 
-=head2 $color-E<gt>get_green
+=head2 set_red
+
+ $color->set_red($red);
+
+Sets the red color channel as an 8-bit value.
+
+=head2 green
+
+ my $color = Color::FFI->green;
+
+Class method that returns an instance of L<Color::FFI> that is pure
+green.
+
+=head2 get_green
+
+ my $green = $color->get_green;
 
 Return the green color channel as an 8-bit value.
 
-=head2 $color-E<gt>get_blue
+=head2 set_green
+
+ $color->set_green($green);
+
+Sets the green color channel as an 8-bit value.
+
+=head2 blue
+
+ my $color = Color::FFI->blue;
+
+Class method that returns an instance of L<Color::FFI> that is pure
+blue.
+
+=head2 get_blue
+
+ my $blue = $color->get_blue;
 
 Return the blue color channel as an 8-bit value.
+
+=head2 set_blue
+
+ $color->set_blue($blue);
+
+Sets the blue color channel as an 8-bit value.
 
 =head1 CAVEATS
 
@@ -56,5 +118,100 @@ It's just an example for testing, it isn't really useful for
 anything.
 
 =cut
+
+my $ffi = Color::FFI::Platypus->new;
+#$ffi->lib('./FFI.so');
+$ffi->package;
+$ffi->custom_type( Color => {
+  native_type => 'opaque',
+  perl_to_native => sub { ${ $_[0] } },
+  native_to_perl => sub { bless \$_[0], "Color::FFI" },
+});
+
+$ffi->attach( [ 'Color::Color(int, int, int)' => '_new' ] => ['Color', 'int', 'int', 'int'] => 'void' );
+$ffi->attach( [ 'Color::~Color()' => '_DESTROY'         ] => ['Color']                      => 'void' );
+
+sub _ffi_record_size {
+  my $size = $ffi
+    ->function( 'Color::_sizeof()' => [] => 'int' )
+    ->call;
+  die "unable to determine size of Color class"
+    unless $size;
+  $size;
+}
+
+sub new
+{
+  my $class = shift;
+  my $ptr = FFI::Platypus::Memory::malloc(_ffi_record_size());
+  my $self = bless \$ptr, $class;
+  _new($self, @_);
+  $self;
+}
+
+foreach my $color (qw( red green blue black white ))
+{
+  $ffi->attach( [ "Color::${color}()"        => $color        ] => []              => 'Color'  );
+  next if $color =~ /^(white|black)$/;
+  $ffi->attach( [ "Color::get_${color}()"    => "get_$color"  ] => ['Color']       => 'int'    );
+  $ffi->attach( [ "Color::set_${color}(int)" => "_set_$color" ] => ['Color','int'] => 'void'    );
+  no strict 'refs';
+  *{"set_$color"} = eval qq{ sub { _set_${color}(\@_);\$_[0] } };
+  die $@ if $@;
+}
+
+sub DESTROY
+{
+  my($self) = @_;
+  _DESTROY($self);
+  FFI::Platypus::Memory::free($$self);
+}
+
+
+package
+  Color::FFI::Platypus;
+
+use Parse::nm;
+use base qw( FFI::Platypus );
+
+sub lib
+{
+  my $self = shift;
+  delete $self->{mangle} if @_;
+  $self->SUPER::lib(@_);
+}
+
+sub find_symbol
+{
+  my($self, $symbol) = @_;
+  return $self->SUPER::find_symbol($symbol)
+    if $self->SUPER::find_symbol($symbol);
+  
+  unless(defined $self->{mangle})
+  {
+    my %mangle;
+    
+    foreach my $libpath ($self->lib)
+    {
+      Parse::nm->run(
+        files => $libpath,
+        filters => [ {
+          action => sub {
+            my $c_symbol = $_[0];
+            my $cpp_symbol = `c++filt $c_symbol`;
+            chomp $cpp_symbol;
+            return if $c_symbol eq $cpp_symbol;
+            $mangle{$cpp_symbol} = $c_symbol;
+          },
+        } ],
+      );
+    }
+    
+    $self->{mangle} = \%mangle;
+  }
+
+  $symbol = $self->{mangle}->{$symbol} if defined $self->{mangle}->{$symbol};
+  $self->SUPER::find_symbol($symbol);
+}
 
 1;

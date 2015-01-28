@@ -1,3 +1,5 @@
 FFI::Platypus
+FFI::Platypus::Memory
 Module::Build
+Parse::nm
 Test::More

@@ -1,5 +1,3 @@
-#include "interface.h"
-
 class Color {
 
 public:
@@ -19,6 +17,8 @@ public:
   static Color *blue()  { return new Color(0,0,255); }
   static Color *white() { return new Color(0xff,0xff,0xff); }
   static Color *black() { return new Color(0x00,0x00,0x00); }
+  
+  static int _sizeof() { return sizeof(Color); }
 
 private:
   int _red, _green, _blue;
@@ -46,4 +46,3 @@ void Color::set_blue(int b)
 {
   _blue = b;
 }
-

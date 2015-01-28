@@ -9,7 +9,8 @@ sub new
 {
   my($class, %args) = @_;
   
-  $args{extra_compiler_flags} = '-fkeep-inline-functions';
+  $args{extra_compiler_flags} = '-fkeep-inline-functions';  # g++ only
+  $args{extra_linker_flags}   = '-lstdc++';                 # probably also compiler dependent
   
   my $self = $class->SUPER::new(%args);
 
