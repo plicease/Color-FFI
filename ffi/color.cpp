@@ -1,4 +1,4 @@
-using namespace std;
+#include "interface.h"
 
 class Color {
 
@@ -47,17 +47,3 @@ void Color::set_blue(int b)
   _blue = b;
 }
 
-extern "C" {
-
-  extern void *c_new(int r, int g, int b)
-  {
-    Color *c = new Color(r,g,b);
-    return (void *) c;
-  }
-
-  extern void c_DESTROY(void *c)
-  {
-    delete (Color*)c;
-  }
-
-};

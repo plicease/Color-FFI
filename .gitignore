@@ -1,2 +1,5 @@
 /Color-FFI-*
 /.build
+*.o
+*.so
+*.dll

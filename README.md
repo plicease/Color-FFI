@@ -13,18 +13,18 @@ example color class written using Module::Build::FFI
 
 # DESCRIPTION
 
-This module is intended as an example to allow me to experiment
-with [Module::Build::FFI](https://metacpan.org/pod/Module::Build::FFI), [FFI::Raw](https://metacpan.org/pod/FFI::Raw) and [FFI::Sweet](https://metacpan.org/pod/FFI::Sweet).  It isn't
-intended to be useful.
+This module is intended as an example to allow me to experiment with 
+[Module::Build::FFI](https://metacpan.org/pod/Module::Build::FFI), [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus).  It isn't intended to be 
+useful.
 
-Objects of this class represent a color stored as three 8-bit color
+Objects of this class represent a color stored as three 8-bit color 
 channel values, red, green and blue.
 
 # CONSTRUCTOR
 
-To create an instance of this class, you can use new, or one of the
-convenience methods.  If you use new you must provide an integer 
-triplet of the red, green and blue values.
+To create an instance of this class, you can use new, or one of the 
+convenience methods.  If you use new you must provide an integer triplet 
+of the red, green and blue values.
 
     my $color = Color::FFI->new(0x7f,0xff,0x00);
     my $red = Color::FFI->red;

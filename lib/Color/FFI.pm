@@ -2,7 +2,7 @@ package Color::FFI;
 
 use strict;
 use warnings;
-use FFI::Sweet;
+use FFI::Platypus;
 
 # ABSTRACT: example color class written using Module::Build::FFI
 # VERSION
@@ -18,18 +18,18 @@ use FFI::Sweet;
 
 =head1 DESCRIPTION
 
-This module is intended as an example to allow me to experiment
-with L<Module::Build::FFI>, L<FFI::Raw> and L<FFI::Sweet>.  It isn't
-intended to be useful.
+This module is intended as an example to allow me to experiment with 
+L<Module::Build::FFI>, L<FFI::Platypus>.  It isn't intended to be 
+useful.
 
-Objects of this class represent a color stored as three 8-bit color
+Objects of this class represent a color stored as three 8-bit color 
 channel values, red, green and blue.
 
 =head1 CONSTRUCTOR
 
-To create an instance of this class, you can use new, or one of the
-convenience methods.  If you use new you must provide an integer 
-triplet of the red, green and blue values.
+To create an instance of this class, you can use new, or one of the 
+convenience methods.  If you use new you must provide an integer triplet 
+of the red, green and blue values.
 
  my $color = Color::FFI->new(0x7f,0xff,0x00);
  my $red = Color::FFI->red;
@@ -56,35 +56,5 @@ It's just an example for testing, it isn't really useful for
 anything.
 
 =cut
-
-ffi_lib do {
-  my($module, $modlibname) = ('Color::FFI', __FILE__);
-  my @modparts = split(/::/,$module);
-  my $modfname = $modparts[-1];
-  my $modpname = join('/',@modparts);
-  my $c = @modparts;
-  $modlibname =~ s,[\\/][^\\/]+$,, while $c--;    # Q&D basename
-  my $file = "$modlibname/auto/$modpname/$modfname.so";
-  unless(-e $file)
-  {
-    $modlibname =~ s,[\\/][^\\/]+$,,;
-    $file = "$modlibname/arch/auto/$modpname/$modfname.so"
-  }
-  \$file;
-};
-
-attach_function [ 'c_new' => 'new' ], [ _int, _int, _int ], _ptr, sub
-{
-  my($cb, $class, $r, $g, $b) = @_;
-  my $self = \($cb->($r, $g, $b));
-  bless $self, $class;
-};
-
-attach_function [ 'c_DESTROY' => 'DESTROY' ], [ ], _void, sub
-{
-  my($cb, $self) = @_;
-  $cb->($self);
-  return;
-};
 
 1;
