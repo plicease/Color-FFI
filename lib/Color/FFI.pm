@@ -119,8 +119,8 @@ anything.
 
 =cut
 
-my $ffi = Color::FFI::Platypus->new;
-#$ffi->lib('./FFI.so');
+my $ffi = FFI::Platypus->new;
+$ffi->lang('CPP');
 $ffi->package;
 $ffi->custom_type( Color => {
   native_type => 'opaque',
@@ -165,53 +165,6 @@ sub DESTROY
   my($self) = @_;
   _DESTROY($self);
   FFI::Platypus::Memory::free($$self);
-}
-
-
-package
-  Color::FFI::Platypus;
-
-use Parse::nm;
-use base qw( FFI::Platypus );
-
-sub lib
-{
-  my $self = shift;
-  delete $self->{mangle} if @_;
-  $self->SUPER::lib(@_);
-}
-
-sub find_symbol
-{
-  my($self, $symbol) = @_;
-  return $self->SUPER::find_symbol($symbol)
-    if $self->SUPER::find_symbol($symbol);
-  
-  unless(defined $self->{mangle})
-  {
-    my %mangle;
-    
-    foreach my $libpath ($self->lib)
-    {
-      Parse::nm->run(
-        files => $libpath,
-        filters => [ {
-          action => sub {
-            my $c_symbol = $_[0];
-            my $cpp_symbol = `c++filt $c_symbol`;
-            chomp $cpp_symbol;
-            return if $c_symbol eq $cpp_symbol;
-            $mangle{$cpp_symbol} = $c_symbol;
-          },
-        } ],
-      );
-    }
-    
-    $self->{mangle} = \%mangle;
-  }
-
-  $symbol = $self->{mangle}->{$symbol} if defined $self->{mangle}->{$symbol};
-  $self->SUPER::find_symbol($symbol);
 }
 
 1;
