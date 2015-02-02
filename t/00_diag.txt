@@ -1,3 +1,4 @@
+FFI::ExtractSymbols
 FFI::Platypus
 FFI::Platypus::Lang::CPP
 FFI::Platypus::Memory
