@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.02      2015-02-02 06:37:25 -0500
   - remove use of inlined functions
   - use ExtUtils::CppGuess for C++ compiler / link options at install time
 
