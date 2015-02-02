@@ -1,3 +1,4 @@
+ExtUtils::CppGuess
 FFI::ExtractSymbols
 FFI::Platypus
 FFI::Platypus::Lang::CPP
