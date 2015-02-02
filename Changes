@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - remove use of inlined functions
 
 0.01      2015-02-02 05:42:19 -0500
   - initial version
