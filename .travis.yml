@@ -5,6 +5,8 @@ install:
   - cpanm -n ExtUtils::CppGuess
   - cpanm -n FFI::ExtractSymbols
   - cpanm -n FFI::Platypus::Lang::CPP
+  - cpanm -n Dist::Zilla
+  - dzil authordeps --missing | cpanm -n
 
 perl:
   - "5.8"
@@ -15,6 +17,7 @@ perl:
   - "5.18"
   - "5.20"
 
-script: HARNESS_IS_VERBOSE=1 prove -lv t xt
+script:
+  - dzil test --verbose
 
 sudo: false
