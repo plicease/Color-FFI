@@ -1,8 +1,0 @@
-ExtUtils::CppGuess
-FFI::ExtractSymbols
-FFI::Platypus
-FFI::Platypus::Lang::CPP
-FFI::Platypus::Memory
-Module::Build
-Module::Build::FFI
-Test::More
