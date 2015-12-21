@@ -1,12 +1,10 @@
 language: perl
+sudo: false
 
 install:
-  - cpanm -n FFI::Platypus
-  - cpanm -n ExtUtils::CppGuess
-  - cpanm -n FFI::ExtractSymbols
-  - cpanm -n FFI::Platypus::Lang::CPP
-  - cpanm -n Dist::Zilla
+  - perlbrew list
   - dzil authordeps --missing | cpanm -n
+  - dzil listdeps --missing | cpanm -n
 
 perl:
   - "5.8"
@@ -16,8 +14,7 @@ perl:
   - "5.16"
   - "5.18"
   - "5.20"
+  - "5.22"
 
 script:
   - dzil test --verbose
-
-sudo: false

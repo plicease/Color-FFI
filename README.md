@@ -1,4 +1,4 @@
-# Color::FFI
+# Color::FFI [![Build Status](https://secure.travis-ci.org/plicease/Color-FFI.png)](http://travis-ci.org/plicease/Color-FFI)
 
 example color class written using Module::Build::FFI
 
@@ -113,7 +113,7 @@ anything.
 
 # AUTHOR
 
-Graham Ollis <plicease@cpan.org>
+Graham Ollis &lt;plicease@cpan.org>
 
 # COPYRIGHT AND LICENSE
 
